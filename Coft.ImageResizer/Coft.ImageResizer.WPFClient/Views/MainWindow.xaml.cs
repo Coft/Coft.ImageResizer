@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Coft.ImageResizer.Models.Messanges;
+using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +25,18 @@ namespace Coft.ImageResizer.WPFClient.Views
         public MainWindow()
         {
             InitializeComponent();
+            GalaSoft.MvvmLight.Messaging.Messenger.Default.Register<ShowChoseFileDialogProceed>(this, OnShowChoseFileDialogProceed);
+        }
+
+        private void OnShowChoseFileDialogProceed(ShowChoseFileDialogProceed message)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Zip Archive (*.zip)|*.zip";
+            openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+            if (openFileDialog.ShowDialog() == true) {
+                GalaSoft.MvvmLight.Messaging.Messenger.Default.Send<ChosenNewFileProceed>(new ChosenNewFileProceed() { Filename = openFileDialog.FileName, SafeFilename = openFileDialog.SafeFileName }); 
+            }
         }
     }
 }

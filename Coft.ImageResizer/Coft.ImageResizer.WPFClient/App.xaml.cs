@@ -13,5 +13,8 @@ namespace Coft.ImageResizer.WPFClient
     /// </summary>
     public partial class App : Application
     {
+        public App()
+        {
+        }
     }
 }

@@ -4,9 +4,50 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Coft.ImageResizer.WPFClient.Views"
+        xmlns:helpers="clr-namespace:Coft.ImageResizer.Models.Helpers;assembly=Coft.ImageResizer.Models"
+        xmlns:vm="clr-namespace:Coft.ImageResizer.WPFClient.ViewModels"
         mc:Ignorable="d"
-        Title="Image Resizer" Height="350" Width="525">
-    <Grid>
-        
+        Title="Image Resizer" SizeToContent="WidthAndHeight">
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
+    <Grid Width="300" Height="100">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Height="100">
+            <StackPanel>
+
+                <TextBlock 
+                    Text="Operacja nie powiodła się, spróbuj ponownie"
+                    Visibility="{Binding ProcessingStatus, Converter={StaticResource ProcessingStatusToVis}, ConverterParameter={x:Static helpers:Enums+ProcessingStatus.Error}}"/>
+
+                <TextBlock 
+                    Text="{Binding CreatedFilename, StringFormat='Operacja zakończyła się sukcesem, utworzono nowy plik: {0}'}"
+                    Visibility="{Binding ProcessingStatus, Converter={StaticResource ProcessingStatusToVis}, ConverterParameter={x:Static helpers:Enums+ProcessingStatus.Success}}"/>
+
+                <TextBlock 
+                    Text="Wybierz archiwum zip zawierające zdjęcia do zmniejszenia"
+                    Visibility="{Binding ProcessingStatus, Converter={StaticResource ProcessingStatusToVis}, ConverterParameter={x:Static helpers:Enums+ProcessingStatus.Initial}}"/>
+
+                <Button 
+                    Content="Wybierz plik zip"
+                    Command="{Binding OpenFileCommand}"/>
+                
+            </StackPanel>
+        </Border>
+
+        <Border 
+            Grid.Row="0" 
+            Height="100"
+            Visibility="{Binding IsProcessing, Converter={StaticResource BoolToVis}}">
+            
+            <StackPanel>
+                <TextBlock Text="{Binding ProcessingPercentage, StringFormat='Przetwarzam dane, proszę czekać {0}'}"/>
+            </StackPanel>
+            
+        </Border>
+
     </Grid>
 </Window>
