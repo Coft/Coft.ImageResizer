@@ -9,6 +9,9 @@ using GalaSoft.MvvmLight.Messaging;
 using static Coft.ImageResizer.Models.Helpers.Enums;
 using Coft.ImageResizer.Models.Services;
 using Coft.ImageResizer.Models.Messanges;
+using System.IO.Compression;
+using System.IO;
+using System.Drawing;
 
 namespace Coft.ImageResizer.WPFClient.ViewModels
 {
@@ -148,6 +151,30 @@ namespace Coft.ImageResizer.WPFClient.ViewModels
         {
             IsProcessing = true;
 
+            using (FileStream zipToOpen = new FileStream(ChosenFilename, FileMode.Open))
+            {
+                using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
+                {
+                    foreach (ZipArchiveEntry entry in archive.Entries)
+                    {
+                        if (entry.FullName.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase))
+                        {
+                            //StreamWriter stream = new StreamWriter(entry.Open());
+                            //Image image = Image.FromStream((Stream)stream);
+                            //Bitmap bitmap = ImageService.ResizeImage(image, 500, 500);
+                            
+                            //bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Jpeg);
+
+                            //using (StreamWriter writer = new StreamWriter(stream))
+                            //{
+                            //    writer.Write(bitmap);
+                            //}
+                        }
+                    }
+                }
+            }
+
+            IsProcessing = false;
         }
 
         #endregion
