@@ -44,7 +44,7 @@
             Visibility="{Binding IsProcessing, Converter={StaticResource BoolToVis}}">
             
             <StackPanel>
-                <TextBlock Text="{Binding ProcessingPercentage, StringFormat='Przetwarzam dane, proszę czekać {0}'}"/>
+                <TextBlock Text="{Binding ProcessingPercentage, StringFormat='Przetwarzam dane, proszę czekać {0}%'}"/>
             </StackPanel>
             
         </Border>

@@ -14,5 +14,11 @@ namespace Coft.ImageResizer.Models.Helpers
             Success = 2,
             Error = 3,
         }
+
+        public enum BitmapOutput
+        {
+            Jpeg = 1,
+            Png = 2,
+        }
     }
 }

@@ -9,16 +9,16 @@ using System.Drawing.Imaging;
 using System.Text.RegularExpressions;
 using System.IO;
 using Coft.ImageResizer.Models.Helpers;
+using System.Threading;
 
 namespace Coft.ImageResizer.Models.Services
 {
     public class ImageService
     {
-        private static Regex imageRegex = new Regex(@"\.(jpe?g)|(png)$", RegexOptions.IgnoreCase);
-
+        public static String[] AvaliableExtensions = new String[] { ".png", ".jpg", ".jpeg", ".gif" };
         public static bool IsImageFilename(string filename)
         {
-            return imageRegex.Match(filename).Success;
+            return AvaliableExtensions.Any(ext => filename.EndsWith(ext, StringComparison.InvariantCultureIgnoreCase));
         }
 
         public static Bitmap ResizeImage(Image image, int width, int height)
@@ -62,14 +62,26 @@ namespace Coft.ImageResizer.Models.Services
 
         public static void ResizeImage(Stream inputStream, Stream outputStream)
         {
-            Image image = Image.FromStream(inputStream);
-            Bitmap bitmap = ImageService.ResizeImage(image, Configuration.MaxWidth, Configuration.MaxHeight);
-
-            using (MemoryStream newMemoryStream = new MemoryStream())
+            using (Image image = Image.FromStream(inputStream))
+            using (Bitmap bitmap = ImageService.ResizeImage(image, Configuration.MaxWidth, Configuration.MaxHeight))
             {
-                bitmap.Save(newMemoryStream, System.Drawing.Imaging.ImageFormat.Jpeg);
-                newMemoryStream.Position = 0;
-                newMemoryStream.CopyTo(outputStream);
+                using (MemoryStream newMemoryStream = new MemoryStream())
+                {
+                    switch (Configuration.DefaultBitmapOutput)
+                    {
+                        case Enums.BitmapOutput.Png:
+                            bitmap.Save(newMemoryStream, System.Drawing.Imaging.ImageFormat.Png);
+                            break;
+
+                        case Enums.BitmapOutput.Jpeg:
+                        default:
+                            bitmap.Save(newMemoryStream, System.Drawing.Imaging.ImageFormat.Jpeg);
+                            break;
+                    }
+
+                    newMemoryStream.Position = 0;
+                    newMemoryStream.CopyTo(outputStream);
+                }
             }
         }
     }

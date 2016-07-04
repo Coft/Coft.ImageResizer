@@ -14,6 +14,7 @@ using System.IO;
 using System.Drawing;
 using System.Text.RegularExpressions;
 using Coft.ImageResizer.Models.Helpers;
+using System.Windows;
 
 namespace Coft.ImageResizer.WPFClient.ViewModels
 {
@@ -153,16 +154,35 @@ namespace Coft.ImageResizer.WPFClient.ViewModels
         {
             IsProcessing = true;
 
-            string newArchiveFilename = ChosenFilename.Replace(".zip", "_min.zip");
+            Task.Run(
+                () =>
+                {
+                    string newArchiveFilename = ZipService.GetNewArchiveName(ChosenFilename);
 
-            using (FileStream zipToWrite = new FileStream(newArchiveFilename, FileMode.Create))
-            using (FileStream zipToOpen = new FileStream(ChosenFilename, FileMode.Open))
-            {
-                ZipService.ParseZip(zipToOpen, zipToWrite);
-            }
+                    try
+                    {
+                        using (FileStream zipToWrite = new FileStream(newArchiveFilename, FileMode.Create))
+                        using (FileStream zipToOpen = new FileStream(ChosenFilename, FileMode.Open))
+                        {
+                            ZipService.ParseZip(zipToOpen, zipToWrite, (pp) => { ProcessingPercentage = pp; });
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show($"Błąd aplikacji skontaktuj się z autorem {Configuration.AuthorEmail}");
 
-            IsProcessing = false;
+                        if (File.Exists(newArchiveFilename))
+                        {
+                            File.Delete(newArchiveFilename);
+                        }
+                    }
+
+                    IsProcessing = false;
+                }
+            );
+
         }
+
 
         #endregion
 
