@@ -97,15 +97,10 @@ namespace Coft.ImageResizer.WPFClient.ViewModels
 
         #endregion
 
-        private ImageService ImageService;
-        private ZipService ZipService;
+        private IImageService ImageService;
+        private IZipService ZipService;
 
-        public MainViewModel() : this(new ImageService(), new ZipService())
-        {
-                
-        }
-
-        public MainViewModel(ImageService imageService, ZipService zipService)
+        public MainViewModel(IImageService imageService, IZipService zipService)
         {
             ImageService = imageService;
             ZipService = zipService;
@@ -164,7 +159,13 @@ namespace Coft.ImageResizer.WPFClient.ViewModels
                         using (FileStream zipToWrite = new FileStream(newArchiveFilename, FileMode.Create))
                         using (FileStream zipToOpen = new FileStream(ChosenFilename, FileMode.Open))
                         {
-                            ZipService.ParseZip(zipToOpen, zipToWrite, (pp) => { ProcessingPercentage = pp; });
+                            ZipService.ParseZip(
+                                zipToOpen,
+                                zipToWrite,
+                                (fn) => { return ImageService.IsImageFilename(fn); },
+                                (ins, ous) => { ImageService.ResizeImage(ins, ous); },
+                                (pp) => { ProcessingPercentage = pp; }
+                            );
                         }
                     }
                     catch (Exception e)

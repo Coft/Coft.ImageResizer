@@ -13,15 +13,15 @@ using System.Threading;
 
 namespace Coft.ImageResizer.Models.Services
 {
-    public class ImageService
+    public class ImageService : IImageService
     {
-        public static String[] AvaliableExtensions = new String[] { ".png", ".jpg", ".jpeg", ".gif" };
-        public static bool IsImageFilename(string filename)
+        public String[] AvaliableExtensions = new String[] { ".png", ".jpg", ".jpeg", ".gif" };
+        public bool IsImageFilename(string filename)
         {
             return AvaliableExtensions.Any(ext => filename.EndsWith(ext, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        public static Bitmap ResizeImage(Image image, int width, int height)
+        public Bitmap ResizeImage(Image image, int width, int height)
         {
             float inputRatio = (float) image.Width / image.Height;
             float destRatio = (float) width / height;
@@ -60,10 +60,10 @@ namespace Coft.ImageResizer.Models.Services
             return destImage;
         }
 
-        public static void ResizeImage(Stream inputStream, Stream outputStream)
+        public void ResizeImage(Stream inputStream, Stream outputStream)
         {
             using (Image image = Image.FromStream(inputStream))
-            using (Bitmap bitmap = ImageService.ResizeImage(image, Configuration.MaxWidth, Configuration.MaxHeight))
+            using (Bitmap bitmap = ResizeImage(image, Configuration.MaxWidth, Configuration.MaxHeight))
             {
                 using (MemoryStream newMemoryStream = new MemoryStream())
                 {

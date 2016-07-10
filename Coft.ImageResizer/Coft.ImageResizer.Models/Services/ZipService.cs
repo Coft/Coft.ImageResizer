@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace Coft.ImageResizer.Models.Services
 {
-    public class ZipService
+    public class ZipService : IZipService
     {
-        public static void ParseZip(FileStream zipToOpen, FileStream zipToWrite, Action<int> processingPercentage)
+        public void ParseZip(FileStream zipToOpen, FileStream zipToWrite, Predicate<string> fileNameFilter, Action<Stream, Stream> parseAction, Action<int> processingPercentage)
         {
             using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Read),
                                 newArchive = new ZipArchive(zipToWrite, ZipArchiveMode.Create))
@@ -23,21 +23,21 @@ namespace Coft.ImageResizer.Models.Services
                 {
                     processingPercentage(100 * entriesDone++ / entriesCount);
 
-                    if (ImageService.IsImageFilename(entry.Name))
+                    if (fileNameFilter(entry.Name))
                     {
                         ZipArchiveEntry newEntry = newArchive.CreateEntry(entry.FullName);
 
                         using (Stream stream = entry.Open(),
                             newStream = newEntry.Open())
                         {
-                            ImageService.ResizeImage(stream, newStream);
+                            parseAction(stream, newStream);
                         }
                     }
                 }
             }
         }
 
-        public static string GetNewArchiveName(string oldName)
+        public string GetNewArchiveName(string oldName)
         {
             return oldName.Replace(".zip", Configuration.FilenameApendix + ".zip");
         }

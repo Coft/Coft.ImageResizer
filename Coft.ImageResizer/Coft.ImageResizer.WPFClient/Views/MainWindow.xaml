@@ -7,10 +7,11 @@
         xmlns:helpers="clr-namespace:Coft.ImageResizer.Models.Helpers;assembly=Coft.ImageResizer.Models"
         xmlns:vm="clr-namespace:Coft.ImageResizer.WPFClient.ViewModels"
         mc:Ignorable="d"
-        Title="Image Resizer" SizeToContent="WidthAndHeight">
-    <Window.DataContext>
+        Title="Image Resizer" SizeToContent="WidthAndHeight"
+        DataContext="{Binding Main, Source={StaticResource ViewModelLocator}}">
+    <!--<Window.DataContext>
         <vm:MainViewModel/>
-    </Window.DataContext>
+    </Window.DataContext>-->
     <Grid Width="300" Height="100">
         <Grid.RowDefinitions>
             <RowDefinition Height="100"/>
